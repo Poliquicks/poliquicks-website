@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Transform the wget mirror at ../mirror/ into a clean, deployable site at ../site/.
+"""Transform the wget mirror at ../mirror/ into a clean, deployable site at ../docs/.
 
 This script is idempotent — running it twice produces the same output.
 
@@ -25,7 +25,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 MIRROR = ROOT / "mirror"
-SITE = ROOT / "site"
+SITE = ROOT / "docs"  # GitHub Pages only offers `/ (root)` or `/docs` as folders
 SRC_PAGES_DIR = MIRROR / "www.poliquicks.com"
 
 # source filename -> output filename (relative to site/)

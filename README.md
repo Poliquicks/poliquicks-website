@@ -5,18 +5,18 @@ Static marketing site for [Poliquicks](https://www.poliquicks.com/), migrated of
 ## Layout
 
 - `mirror/` — raw `wget` dump of the live Squarespace site. Reference only; do not edit.
-- `site/` — deployable artifact. This is what GitHub Pages serves.
+- `docs/` — deployable artifact. This is what GitHub Pages serves.
 
 ## Local dev
 
 ```
-cd site
+cd docs
 npx serve .
 ```
 
 ## Deploy
 
-Pushes to `main` are published automatically by GitHub Pages (Settings → Pages → source: `main`, folder: `/site`).
+Pushes to `main` are published automatically by GitHub Pages (Settings → Pages → source: `main`, folder: `/docs`).
 
 ## Load-bearing pages
 

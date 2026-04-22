@@ -13,7 +13,7 @@ import urllib.request
 from collections import Counter
 from pathlib import Path
 
-SITE = Path(__file__).resolve().parent.parent / "site"
+SITE = Path(__file__).resolve().parent.parent / "docs"
 BASE = "http://localhost:3000"
 
 PAGES = sorted(p.name for p in SITE.glob("*.html"))
