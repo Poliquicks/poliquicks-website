@@ -1,0 +1,294 @@
+/* Marquee scroll animation (shim for Squarespace's runtime-driven Marquee block).
+   Animation duration is tuned so ~1 item passes a fixed point every ~1.5s on a
+   typical viewport. Hover does NOT pause — the user expects continuous motion. */
+.marquee-shim-track {
+  display: inline-flex;
+  width: max-content;
+  animation: marquee-shim-scroll 40s linear infinite;
+}
+.marquee-shim-group {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+@keyframes marquee-shim-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Accordion smoothing — shim sets inline height transitions; this backs it up. */
+.sqs-block-accordion .accordion-item__dropdown {
+  transition: height 320ms cubic-bezier(.4, 0, .2, 1);
+}
+
+/* Team carousel: Squarespace ships `.user-items-list-carousel__slides` with
+   `opacity: 0` (runtime JS flips to 1 on init), so the whole slide list is
+   invisible without that runtime. We also convert it into an infinite
+   marquee-style scroller (content duplicated in JS; animation defined below). */
+.user-items-list-carousel__slides {
+  opacity: 1 !important;
+}
+.user-items-list-carousel__slides .user-items-list-carousel__slide {
+  transform: none !important;
+  pointer-events: auto !important;
+}
+
+/* Hide the native scrollbar on the team carousel — arrows drive navigation. */
+.team-carousel-no-scrollbar::-webkit-scrollbar { display: none; }
+.team-carousel-no-scrollbar { -ms-overflow-style: none; }
+
+/* ---- Footer ------------------------------------------------------------ */
+/* The entire Squarespace fluid-engine footer is replaced with this clean,
+   hand-written one (see `FOOTER_HTML` in scripts/build.py). */
+.site-footer {
+  background: #8b3cd9;
+  color: #fff;
+  padding: 40px 6vw 28px;
+  font-family: "Libre Franklin", system-ui, -apple-system, sans-serif;
+}
+.site-footer__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px 48px;
+  align-items: start;
+}
+@media (max-width: 640px) {
+  .site-footer { padding: 28px 6vw 20px; }
+  .site-footer__inner { grid-template-columns: 1fr; gap: 20px; }
+}
+.site-footer a { color: inherit; text-decoration: none; }
+.site-footer a:hover { text-decoration: underline; }
+.site-footer h3 {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 12px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.site-footer p { margin: 0 0 4px; line-height: 1.4; }
+.site-footer__social {
+  display: flex;
+  gap: 18px;
+  margin-top: 18px;
+}
+.site-footer__social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+}
+.site-footer__social svg { width: 40px; height: 40px; fill: #fff; }
+.site-footer__newsletter-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  margin-top: 10px;
+  align-items: stretch;
+}
+.site-footer__newsletter-form input[type="email"] {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 18px;
+  font-size: 1rem;
+  font-family: inherit;
+  color: #1a1a1a;
+  background: #fff;
+  border: 1px solid #fff;
+  border-radius: 999px;
+  outline: none;
+  box-sizing: border-box;
+}
+.site-footer__newsletter-form input[type="email"]::placeholder {
+  color: rgba(26, 26, 26, 0.55);
+}
+.site-footer__newsletter-form button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: #8b3cd9;
+  background: #fff;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.site-footer__newsletter-form button:hover { background: #f3e6fb; }
+.site-footer p.site-footer__privacy {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  margin: 32px 0 0;
+  text-align: right;
+}
+.site-footer__privacy a { text-decoration: underline; }
+.site-footer__bottom {
+  max-width: 1100px;
+  margin: 24px auto 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+@media (max-width: 640px) {
+  .site-footer__bottom { flex-direction: column; align-items: flex-start; }
+}
+
+#footer-sections .sqs-html-content h1,
+#footer-sections .sqs-html-content h2,
+#footer-sections .sqs-html-content h3 {
+  margin-top: 0 !important;
+  margin-bottom: 0.3em !important;
+  line-height: 1.2 !important;
+}
+#footer-sections .sqs-html-content p {
+  margin: 0 0 0.3em !important;
+  line-height: 1.3 !important;
+}
+#footer-sections .newsletter-form-header {
+  margin-bottom: 0.6rem !important;
+}
+#footer-sections .newsletter-form-body {
+  margin-top: 0.4rem !important;
+}
+
+@media (max-width: 767px) {
+  /* Fluid-type formulas blow these up to 40–60px on phone widths.
+     Cap to sane sizes so the footer doesn't become a full screen. */
+  #footer-sections .sqs-html-content h1 { font-size: 1.6rem !important; }
+  #footer-sections .sqs-html-content h2 { font-size: 1.3rem !important; }
+  #footer-sections .sqs-html-content h3 { font-size: 1.1rem !important; }
+  #footer-sections .newsletter-form-header-title { font-size: 1.3rem !important; }
+  #footer-sections .newsletter-form-header-description { font-size: 0.9rem !important; }
+}
+
+/* Team carousel image sizing — Squarespace's rules for media-inner + img are
+   gated on `[data-is-media-enabled="true"]` (set by their JS runtime). Without
+   that attr, media-inner has no dimensions and the img gets rendered as a 0x0
+   (draggable but invisible). Override with !important to win any cascade. */
+.user-items-list-carousel__media-container {
+  width: 100% !important;
+  max-width: 360px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-bottom: 0 !important;
+  height: auto !important;
+}
+.user-items-list-carousel__media-inner {
+  position: relative !important;
+  width: 100% !important;
+  padding-bottom: 100% !important; /* 1:1 ratio via padding trick (wider support than aspect-ratio) */
+  height: 0 !important;
+  overflow: hidden !important;
+}
+.user-items-list-carousel__media-inner[data-media-aspect-ratio="circle"] {
+  border-radius: 50% !important;
+}
+.user-items-list-carousel__media-inner > img,
+.user-items-list-carousel__media-inner > .user-items-list-carousel__media,
+img.user-items-list-carousel__media {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Static contact form shim — restyled to match the original Squarespace
+   contact form: grouped Name field (First + Last side-by-side), large
+   pill-shaped inputs, purple full-width Send button. */
+.contact-form-shim {
+  display: grid;
+  gap: 22px;
+  max-width: 800px;
+  margin: 0 auto;
+  color: #1a1a1a;
+  font-family: inherit;
+}
+.contact-form-shim__group {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: block;
+}
+.contact-form-shim__legend {
+  font-size: 1.6rem;
+  font-weight: 400;
+  padding: 0;
+  margin-bottom: 12px;
+}
+.contact-form-shim__field {
+  display: block;
+  font-size: 1rem;
+}
+.contact-form-shim__label {
+  display: block;
+  font-size: 1.15rem;
+  margin-bottom: 8px;
+  color: #1a1a1a;
+}
+.contact-form-shim__req {
+  color: #8a8a8a;
+  font-size: 0.9em;
+}
+.contact-form-shim input[type="text"],
+.contact-form-shim input[type="email"],
+.contact-form-shim textarea {
+  width: 100%;
+  padding: 16px 22px;
+  font-size: 1rem;
+  font-family: inherit;
+  border: 1px solid #2a2a2a;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.contact-form-shim input:focus,
+.contact-form-shim textarea:focus {
+  border-color: #7c2ec4;
+  box-shadow: 0 0 0 3px rgba(124, 46, 196, 0.15);
+}
+.contact-form-shim textarea {
+  min-height: 200px;
+  border-radius: 22px;  /* still rounded but not a pill */
+  resize: vertical;
+}
+.contact-form-shim__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 560px) {
+  .contact-form-shim__row { grid-template-columns: 1fr; }
+}
+.contact-form-shim__submit {
+  padding: 18px 24px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: #fff;
+  background: #8b3cd9; /* match the Poliquicks purple */
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  width: 100%;
+  transition: background 120ms ease, transform 60ms ease;
+}
+.contact-form-shim__submit:hover { background: #7a2ec4; }
+.contact-form-shim__submit:active { transform: translateY(1px); }
+.contact-form-shim__status {
+  font-size: 0.95em;
+  min-height: 1.2em;
+  color: #7a2ec4;
+}

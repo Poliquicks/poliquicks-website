@@ -1,0 +1,8 @@
+.DS_Store
+node_modules/
+.vscode/
+*.log
+
+# Raw wget mirror — large (~54MB), regenerate with `scripts/mirror.sh`.
+# We keep `site/` checked in; mirror/ is only a reference copy.
+mirror/
