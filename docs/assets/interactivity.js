@@ -118,6 +118,78 @@
     }
   });
 
+  // --- Formspree AJAX submit ----------------------------------------------
+  // Submit the contact + newsletter forms in-page so there's no redirect to
+  // formspree.io's thank-you screen. Formspree returns JSON when we set
+  // `Accept: application/json`, so we can show an inline success/error message
+  // and reset the form.
+  function wireFormspreeForm(form, options) {
+    options = options || {};
+    form.addEventListener("submit", async function (e) {
+      if (!form.action || form.action.indexOf("formspree.io") === -1) return;
+      e.preventDefault();
+
+      var submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+      var originalLabel = submitBtn ? submitBtn.textContent : null;
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "Sending..."; }
+
+      try {
+        var resp = await fetch(form.action, {
+          method: "POST",
+          body: new FormData(form),
+          headers: { Accept: "application/json" },
+        });
+        if (resp.ok) {
+          options.onSuccess && options.onSuccess(form);
+        } else {
+          var data = {};
+          try { data = await resp.json(); } catch (_) {}
+          var msg = (data.errors && data.errors.map(function (x) { return x.message; }).join(", "))
+            || "Something went wrong. Please try again.";
+          options.onError && options.onError(form, msg);
+        }
+      } catch (err) {
+        options.onError && options.onError(form, "Network error. Please try again.");
+      } finally {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalLabel; }
+      }
+    });
+  }
+
+  // Contact form ("Get in touch") — show inline status, reset on success.
+  document.querySelectorAll("form.contact-form-shim").forEach(function (form) {
+    var status = form.querySelector(".contact-form-shim__status");
+    wireFormspreeForm(form, {
+      onSuccess: function () {
+        form.reset();
+        if (status) { status.textContent = "Thanks — your message was sent."; status.style.color = "#7a2ec4"; }
+      },
+      onError: function (_f, msg) {
+        if (status) { status.textContent = msg; status.style.color = "#b33"; }
+      },
+    });
+  });
+
+  // Footer newsletter form — no dedicated status element; replace the form
+  // body with a thank-you message on success.
+  document.querySelectorAll("form.site-footer__newsletter-form").forEach(function (form) {
+    wireFormspreeForm(form, {
+      onSuccess: function () {
+        form.innerHTML = '<span style="color:#fff;font-weight:600;">Thanks for subscribing!</span>';
+      },
+      onError: function (f, msg) {
+        var err = f.querySelector(".site-footer__newsletter-error");
+        if (!err) {
+          err = document.createElement("div");
+          err.className = "site-footer__newsletter-error";
+          err.style.cssText = "grid-column: 1 / -1; color: #ffd; font-size: 0.85rem; margin-top: 6px;";
+          f.appendChild(err);
+        }
+        err.textContent = msg;
+      },
+    });
+  });
+
   // --- Carousel (Meet the Team) -------------------------------------------
   // Arrow-controlled horizontal scroller with seamless infinite wrap. We clone
   // the slide set twice (total 3 copies) and start scrolled into the middle
