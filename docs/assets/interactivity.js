@@ -162,7 +162,7 @@
     wireFormspreeForm(form, {
       onSuccess: function () {
         form.reset();
-        if (status) { status.textContent = "Thanks — your message was sent."; status.style.color = "#7a2ec4"; }
+        if (status) { status.textContent = "Thank you! Your message was sent."; status.style.color = "#7a2ec4"; }
       },
       onError: function (_f, msg) {
         if (status) { status.textContent = msg; status.style.color = "#b33"; }
