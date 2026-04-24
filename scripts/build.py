@@ -285,15 +285,17 @@ def strip_cart(html: str) -> str:
     return html
 
 
-FORMSPREE_FORM_ID = "mvzdwjnb"  # https://formspree.io/f/mvzdwjnb
-FORMSPREE_ACTION = f"https://formspree.io/f/{FORMSPREE_FORM_ID}"
+FORMSPREE_CONTACT_ID = "mvzdwjnb"     # https://formspree.io/f/mvzdwjnb ("Get in touch")
+FORMSPREE_NEWSLETTER_ID = "xkokygpp"  # https://formspree.io/f/xkokygpp (footer newsletter)
+FORMSPREE_CONTACT_ACTION = f"https://formspree.io/f/{FORMSPREE_CONTACT_ID}"
+FORMSPREE_NEWSLETTER_ACTION = f"https://formspree.io/f/{FORMSPREE_NEWSLETTER_ID}"
 
 # Static replacement for the empty Squarespace form-block shell on the homepage's
 # "Get in touch" section. Fields mirror the original Squarespace config
 # (name/email/message, all required, submit button "Send"). Success message
 # handled inline via JS shim (see interactivity.js).
 CONTACT_FORM_HTML = f'''
-<form class="contact-form-shim" action="{FORMSPREE_ACTION}" method="POST">
+<form class="contact-form-shim" action="{FORMSPREE_CONTACT_ACTION}" method="POST">
   <input type="hidden" name="_subject" value="Poliquicks contact form message">
   <fieldset class="contact-form-shim__group">
     <legend class="contact-form-shim__legend">Name</legend>
@@ -328,16 +330,14 @@ def replace_form_action(html: str) -> str:
     Squarespace renders the form with no `action` (submission is JS-driven
     via `onsubmit="Y.use('squarespace-form-submit', ...)"`). We strip that
     handler and inject an `action` + conventional form attributes so the
-    browser's native form POST goes to Formspree.
+    browser's native form POST goes to Formspree (newsletter endpoint).
     """
     def fix_form(match: re.Match) -> str:
         tag = match.group(0)
-        # Drop the onsubmit handler (may span newlines)
         tag = re.sub(r'\sonsubmit\s*=\s*"[^"]*"', '', tag, flags=re.DOTALL)
         tag = re.sub(r"\sonsubmit\s*=\s*'[^']*'", '', tag, flags=re.DOTALL)
-        # Inject action + hidden subject if not already present
         if 'action=' not in tag:
-            tag = tag[:-1] + f' action="{FORMSPREE_ACTION}" >'
+            tag = tag[:-1] + f' action="{FORMSPREE_NEWSLETTER_ACTION}" >'
         return tag
 
     html = re.sub(
@@ -345,10 +345,7 @@ def replace_form_action(html: str) -> str:
         fix_form, html, flags=re.DOTALL,
     )
 
-    # Squarespace's <input> for email has lots of squarespace-specific attrs;
-    # Formspree just needs name="email", which is already present. Add a hidden
-    # subject so we can tell newsletter submits apart in Formspree's dashboard.
-    if FORMSPREE_ACTION in html and '_subject" value="New Poliquicks' not in html:
+    if FORMSPREE_NEWSLETTER_ACTION in html and '_subject" value="New Poliquicks' not in html:
         html = re.sub(
             r'(<div[^>]*class="newsletter-form-button-wrapper)',
             '<input type="hidden" name="_subject" value="New Poliquicks subscriber">'
@@ -379,7 +376,7 @@ FOOTER_HTML = f'''
     <div class="site-footer__col">
       <h3>Stay informed on staying informed</h3>
       <p>Sign up with your email address to receive news and updates.</p>
-      <form class="site-footer__newsletter-form" action="{FORMSPREE_ACTION}" method="POST">
+      <form class="site-footer__newsletter-form" action="{FORMSPREE_NEWSLETTER_ACTION}" method="POST">
         <input type="hidden" name="_subject" value="New Poliquicks subscriber">
         <input type="email" name="email" required autocomplete="email" placeholder="Email Address">
         <button type="submit">Sign Up</button>
